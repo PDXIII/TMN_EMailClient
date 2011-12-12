@@ -5,72 +5,77 @@
 // You can also do imap, but that's not included here
 
 // A function to check a mail account
-void checkMail() {
-  try {
-    Properties props = System.getProperties();
-
-    props.put("mail.imap.host", imapHost);
-
-    // These are security settings required for gmail
-    // May need different code depending on the account
-    props.put("mail.imap.port", imapPort);
-    props.put("mail.imap.starttls.enable", "true");
-    props.setProperty("mail.imap.socketFactory.fallback", "false");
-    props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-
-    // Create authentication object
-    Auth auth = new Auth(incoming);
-
-    // Make a session
-    Session session = Session.getDefaultInstance(props, auth);
-    Store store = session.getStore("imap");
-    store.connect();
-
-    // Get inbox
-    Folder folder = store.getFolder("INBOX");
-    folder.open(Folder.READ_ONLY);
-
-    int totalMessages = folder.getMessageCount();
-    System.out.println(totalMessages + " total messages.");
-
-
-    // Get array of messages and display them
-    Message message[] = folder.getMessages();
-
-    for (int i=0; i < message.length; i++) {
-
-      PD13Mail currentPD13Mail = new PD13Mail();
-
-      currentPD13Mail.setNumber(i);
-      currentPD13Mail.setFrom(message[i].getFrom()[0].toString());
-      currentPD13Mail.setSubject(message[i].getSubject());
-      currentPD13Mail.setSize(message[i].getSize());
-
-
-      if (message[i].isMimeType("TEXT/PLAIN")) {
-        currentPD13Mail.setMessage(message[i].getContent().toString());
-      }
-
-      if (message[i].isMimeType("multipart/ALTERNATIVE")) {
-
-        MimeMultipart content = (MimeMultipart)message[i].getContent();
-
-        for (int k = 0; k < content.getCount(); k++) {
-
-          MimeBodyPart thisBodyPart = (MimeBodyPart)content.getBodyPart(k);
-
-          if (thisBodyPart.isMimeType("TEXT/PLAIN")) {
-
-            currentPD13Mail.setMessage(thisBodyPart.getContent().toString());
-          }
-        }
-      }
-
-      allPD13Mails.add(currentPD13Mail);
-
-      // old and working
-      /*			 System.out.println("---------------------");
+void checkMailsOnline() {
+	
+	mailManager = new PD13MailManager();
+	
+	try {
+		Properties props = System.getProperties();
+		
+		props.put("mail.imap.host", imapHost);
+		
+		// These are security settings required for gmail
+		// May need different code depending on the account
+		props.put("mail.imap.port", imapPort);
+		props.put("mail.imap.starttls.enable", "true");
+		props.setProperty("mail.imap.socketFactory.fallback", "false");
+		props.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+		
+		
+		// Create authentication object
+		Auth auth = new Auth(incoming);
+		
+		// Make a session
+		Session session = Session.getDefaultInstance(props, auth);
+		Store store = session.getStore("imap");
+		store.connect();
+		
+		// Get inbox
+		Folder folder = store.getFolder("INBOX");
+		folder.open(Folder.READ_ONLY);
+		
+		int totalMessages = folder.getMessageCount();
+		System.out.println(totalMessages + " total messages.");
+		
+		int mailIndex = 0;
+		// Get array of messages and display them
+		Message message[] = folder.getMessages();
+		
+		for (int i=0; i < message.length; i++) {
+			
+			PD13Mail currentPD13Mail = new PD13Mail();
+			
+			currentPD13Mail.setNumber(mailIndex);
+			currentPD13Mail.setFrom(message[i].getFrom()[0].toString());
+			currentPD13Mail.setSubject(message[i].getSubject());
+			currentPD13Mail.setSize(message[i].getSize());
+			
+			
+			if (message[i].isMimeType("TEXT/PLAIN")) {
+			  currentPD13Mail.setMessage(message[i].getContent().toString());
+			}
+			
+			if (message[i].isMimeType("multipart/ALTERNATIVE")) {
+				
+				MimeMultipart content = (MimeMultipart)message[i].getContent();
+				
+				for (int k = 0; k < content.getCount(); k++) {
+					
+					MimeBodyPart thisBodyPart = (MimeBodyPart)content.getBodyPart(k);
+					
+					if (thisBodyPart.isMimeType("TEXT/PLAIN")) {
+						
+						currentPD13Mail.setMessage(thisBodyPart.getContent().toString());
+					}
+				}
+			}
+			
+			mailIndex++;
+			
+			mailManager.add(currentPD13Mail);
+			
+		  // old and working
+/*			 System.out.println("---------------------");
        			 System.out.println("Message # " + (i));
        			 // Absender für Umlaute parsen
        			 System.out.println("From: " + message[i].getFrom()[0]); 
@@ -105,18 +110,83 @@ void checkMail() {
        					
        				}
        			}
-       */
-    }
-
-    // Close the session
-    folder.close(false);
-    store.close();
-  } 
-  // This error handling isn't very good
-  catch (Exception e) {
-    e.printStackTrace();
-  }
+*/
+		}
+		
+		// Close the session
+		folder.close(false);
+		store.close();
+		parse2XML();
+		
+	} 
+	// This error handling isn't very good
+	catch (Exception e) {
+		e.printStackTrace();
+	}
 }
+
+void checkMailsOffline(){
+	
+	mailManager = new PD13MailManager();
+	
+	parseFromXML();
+}
+
+void parse2XML(){
+	
+	try{
+	  xmlInOut.loadElement("mails.xml"); 
+	}catch(Exception e){
+	  //if the xml file could not be loaded it has to be created
+	  xmlEvent(new proxml.XMLElement("mails"));
+	}
+	
+	for(int i = 0; i < mailManager.pd13Mails.size(); i++){
+		
+		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i);
+		
+		proxml.XMLElement mail = new proxml.XMLElement("mail");
+		
+		mail.addAttribute("number",currentMail.getNumber());
+		
+		mail.addAttribute("bytes",currentMail.getSize());
+		
+		mail.addAttribute("from",currentMail.getFrom());
+		
+		mail.addAttribute("subject",currentMail.getSubject());
+		
+		mail.addAttribute("message",currentMail.getMessage());
+		
+		mails.addChild(mail);
+		
+	}
+	
+	xmlInOut.saveElement(mails,"mails.xml");
+}
+
+void parseFromXML(){
+	
+	println("parse " + mails.countChildren());
+//	mails.printElementTree(" ");
+	proxml.XMLElement mail;
+	
+	for(int i = 0; i < mails.countChildren(); i++){
+		
+		mail = mails.getChild(i);
+		
+		PD13Mail currentMail = new PD13Mail();
+		
+		currentMail.setNumber(mail.getIntAttribute("number"));
+		currentMail.setSize(mail.getIntAttribute("bytes"));
+		currentMail.setFrom(mail.getAttribute("from"));
+		currentMail.setSubject(mail.getAttribute("subject"));
+		currentMail.setMessage(mail.getAttribute("message"));
+		
+		mailManager.add(currentMail);
+	}
+	
+}
+
 
 // A function to send mail
 // doesn't work

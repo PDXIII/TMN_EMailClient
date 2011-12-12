@@ -57,6 +57,7 @@ class PD13Mail {
 	
 	void setSubject(String _subject){
 		subject = _subject;
+//		subject.replaceAll("&", "&amp");
 	}
 	
 	String getSubject(){
@@ -65,6 +66,8 @@ class PD13Mail {
 	
 	void setMessage(String _message){
 		message = _message;
+		
+//		message.replaceAll("&", "&amp");
 	}
 	
 	String getMessage(){

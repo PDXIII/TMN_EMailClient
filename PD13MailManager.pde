@@ -1,14 +1,16 @@
+
 class PD13MailManager {
 	
 	// Variablen
 	ArrayList pd13Mails;
-	// Constructor
+	
+// Constructor
 	PD13MailManager(){
 		
 		pd13Mails = new ArrayList();
 		
+		
 	}
-	
 	
 	// Methoden
 	
@@ -31,6 +33,8 @@ class PD13MailManager {
 			println(currentMail.getSize());
 		}
 	}
+	
+
 	
 	int getCount(){
 		
