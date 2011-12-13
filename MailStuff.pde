@@ -116,8 +116,9 @@ void checkMailsOnline() {
 		// Close the session
 		folder.close(false);
 		store.close();
-		parse2XML();
-		
+		// parse2XML();
+		println("parse 2 JSON");
+		parse2JSON();
 	} 
 	// This error handling isn't very good
 	catch (Exception e) {
@@ -132,6 +133,38 @@ void checkMailsOffline(){
 	parseFromXML();
 }
 
+void parse2JSON(){
+	
+	println("parse 2 JSON NOW!");
+	
+	
+	String[] storedMails = new String[mailManager.getCount()+2];
+	
+	String introJSON = "{\"mails\":[";
+	String outroJSON = "]}";
+	storedMails[0] = introJSON;
+	storedMails[mailManager.getCount()+1] = outroJSON;
+	
+	for(int i = 1; i < mailManager.getCount(); i++){
+		
+		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i-1);
+		
+		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\",\n" + "\"bytes\" :\"" + currentMail.getSize() + "\",\n" + "\"from\" :\"" +currentMail.getFrom() + "\",\n" + "\"subject\" :\"" +currentMail.getSubject() + "\",\n" + "\"message\" :\"" +currentMail.getMessage() + "\"\n" + "}";
+		
+		if(i < mailManager.getCount()-1){
+			currentMail2JSONString = currentMail2JSONString + ",";
+		}
+		
+		println(currentMail2JSONString);
+	
+		storedMails[i] = currentMail2JSONString;
+	}
+	
+	saveStrings("./data/allMails.json", storedMails);
+	
+	
+	
+}
 void parse2XML(){
 	
 	try{
