@@ -32,6 +32,8 @@ class PD13Mail {
 	
 	void setFrom(String _from){
 		from = _from;
+		
+		from = from.replaceAll("\"", " ");
 	}
 	
 	String getFrom(){
@@ -58,6 +60,7 @@ class PD13Mail {
 	void setSubject(String _subject){
 		subject = _subject;
 //		subject.replaceAll("&", "&amp");
+		subject = subject.replaceAll("\"", " ");
 	}
 	
 	String getSubject(){
@@ -65,9 +68,9 @@ class PD13Mail {
 	}
 	
 	void setMessage(String _message){
-		message = _message;
-		
+		message = _message;	
 //		message.replaceAll("&", "&amp");
+		message = message.replaceAll("\"", " ");
 	}
 	
 	String getMessage(){

@@ -138,12 +138,12 @@ void parse2JSON(){
 	println("parse 2 JSON NOW!");
 	
 	
-	String[] storedMails = new String[mailManager.getCount()+2];
+	String[] storedMails = new String[mailManager.getCount()+1];
 	
 	String introJSON = "{\"mails\":[";
 	String outroJSON = "]}";
 	storedMails[0] = introJSON;
-	storedMails[mailManager.getCount()+1] = outroJSON;
+	storedMails[mailManager.getCount()] = outroJSON;
 	
 	for(int i = 1; i < mailManager.getCount(); i++){
 		
@@ -292,4 +292,3 @@ void sendMail() {
     e.printStackTrace();
   }
 }
-
