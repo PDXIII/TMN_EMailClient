@@ -7,13 +7,11 @@ class PD13Mail {
 	String subject;
 	String message;
 	// Constructor
-	PD13Mail(){
-		
+	PD13Mail(){		
 		
 	}
 	
-	// Methoden
-	
+	// Methoden	
 	void setSize(int _bytes){
 		bytes = _bytes;
 	}
@@ -59,7 +57,6 @@ class PD13Mail {
 	
 	void setSubject(String _subject){
 		subject = _subject;
-//		subject.replaceAll("&", "&amp");
 		subject = subject.replaceAll("\"", " ");
 	}
 	
@@ -69,7 +66,6 @@ class PD13Mail {
 	
 	void setMessage(String _message){
 		message = _message;	
-//		message.replaceAll("&", "&amp");
 		message = message.replaceAll("\"", " ");
 	}
 	

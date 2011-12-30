@@ -71,53 +71,13 @@ void checkMailsOnline() {
 			}
 			
 			mailIndex++;
-			
 			mailManager.add(currentPD13Mail);
-			
-		  // old and working
-/*			 System.out.println("---------------------");
-       			 System.out.println("Message # " + (i));
-       			 // Absender für Umlaute parsen
-       			 System.out.println("From: " + message[i].getFrom()[0]); 
-       			 System.out.println("Adress Type: " + message[i].getFrom()[0].getType()); 
-       			
-       			 System.out.println("Subject: " + message[i].getSubject());
-       			 System.out.println("Message:");
-       			 // Content Type abfragen und verschiedene Funktionen schreiben für Multipart
-       			 //System.out.println(message[i].getContentType());
-       			
-       			if(message[i].isMimeType("TEXT/PLAIN")){
-       				String content = message[i].getContent().toString(); 
-       				System.out.println(content);
-       			
-       			}
-       			
-       			if (message[i].isMimeType("multipart/ALTERNATIVE")) {
-       				
-       				MimeMultipart content = (MimeMultipart)message[i].getContent();
-       				
-       				//String content = message[i].getContent().toString();
-       				System.out.println(content.getCount());
-       				for (int k = 0; k < content.getCount(); k++) {
-       					
-       					MimeBodyPart thisBodyPart = (MimeBodyPart)content.getBodyPart(k);
-       					
-       					if(thisBodyPart.isMimeType("TEXT/PLAIN")){
-       						
-       						System.out.println(thisBodyPart.getContent().toString());
-       					}
-       					//System.out.println(thisBodyPart.getContentType());
-       					
-       				}
-       			}
-*/
 		}
 		
 		// Close the session
 		folder.close(false);
 		store.close();
-		// parse2XML();
-		println("parse 2 JSON");
+
 		parse2JSON();
 	} 
 	// This error handling isn't very good
@@ -126,104 +86,72 @@ void checkMailsOnline() {
 	}
 }
 
-void checkMailsOffline(){
-	
-	mailManager = new PD13MailManager();
-	
-	parseFromXML();
+void checkMailsOffline(){	
 }
 
-void parse2JSON(){
-	
+void parse2JSON(){	
 	println("parse 2 JSON NOW!");
-	
-	
-	String[] storedMails = new String[mailManager.getCount()+1];
-	
-	String introJSON = "{\"mails\":[";
+	String[] storedMails = new String[mailManager.getCount()+2];	
+	// String introJSON = "{\"mails\":[";
+	String introJSON = "{\"total\": \"" + mailManager.getCount() +"\",\"mails\":[";
 	String outroJSON = "]}";
 	storedMails[0] = introJSON;
-	storedMails[mailManager.getCount()] = outroJSON;
+	storedMails[mailManager.getCount()+1] = outroJSON;
 	
-	for(int i = 1; i < mailManager.getCount(); i++){
-		
-		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i-1);
-		
-		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\",\n" + "\"bytes\" :\"" + currentMail.getSize() + "\",\n" + "\"from\" :\"" +currentMail.getFrom() + "\",\n" + "\"subject\" :\"" +currentMail.getSubject() + "\",\n" + "\"message\" :\"" +currentMail.getMessage() + "\"\n" + "}";
-		
+	for(int i = 0; i < mailManager.getCount(); i++){		
+		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i);		
+		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\"," + "\"bytes\" :\"" + currentMail.getSize() + "\"," + "\"from\" :\"" +currentMail.getFrom() + "\"," + "\"subject\" :\"" +currentMail.getSubject() + "\"," + "\"message\" :\"" +currentMail.getMessage() + "\"" + "}";
 		if(i < mailManager.getCount()-1){
 			currentMail2JSONString = currentMail2JSONString + ",";
+		}		
+		println(currentMail2JSONString);	
+		storedMails[i+1] = currentMail2JSONString;
+	}
+	saveStrings("./data/allMails.json", storedMails);	
+}
+
+void parseFromJSON(){
+	
+	
+	try {
+		JSONObject allMails = new JSONObject(join(loadStrings("./data/allMails.json"), ""));
+		
+		JSONArray mails = allMails.getJSONArray("mails");
+		int total = allMails.getInt("total");
+		println ("There were " + total + " mails in your json file.");
+		
+		mailManager = new PD13MailManager();
+		// println(mails.toString());		
+
+		for(int i = 0; i < total; i++){
+			
+			try{
+				JSONObject currentJSONObj = mails.optJSONObject(i);
+			
+				PD13Mail currentMail = new PD13Mail();
+			
+				currentMail.setNumber(currentJSONObj.getInt("number"));
+				currentMail.setSize(currentJSONObj.getInt("bytes"));
+				currentMail.setFrom(currentJSONObj.getString("from"));
+				currentMail.setSubject(currentJSONObj.getString("subject"));
+				currentMail.setMessage(currentJSONObj.getString("message"));
+			
+				mailManager.add(currentMail);
+				
+			}
+			catch(JSONException e){
+				println("Something is wrong with this JSONArray!!!");
+			
+			}
 		}
-		
-		println(currentMail2JSONString);
-	
-		storedMails[i] = currentMail2JSONString;
 	}
-	
-	saveStrings("./data/allMails.json", storedMails);
-	
-	
-	
+	catch (JSONException e) {
+		println ("There was an error parsing the JSONObject.");
+	}
 }
-void parse2XML(){
-	
-	try{
-	  xmlInOut.loadElement("mails.xml"); 
-	}catch(Exception e){
-	  //if the xml file could not be loaded it has to be created
-	  xmlEvent(new proxml.XMLElement("mails"));
-	}
-	
-	for(int i = 0; i < mailManager.pd13Mails.size(); i++){
-		
-		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i);
-		
-		proxml.XMLElement mail = new proxml.XMLElement("mail");
-		
-		mail.addAttribute("number",currentMail.getNumber());
-		
-		mail.addAttribute("bytes",currentMail.getSize());
-		
-		mail.addAttribute("from",currentMail.getFrom());
-		
-		mail.addAttribute("subject",currentMail.getSubject());
-		
-		mail.addAttribute("message",currentMail.getMessage());
-		
-		mails.addChild(mail);
-		
-	}
-	
-	xmlInOut.saveElement(mails,"mails.xml");
-}
-
-void parseFromXML(){
-	
-	println("parse " + mails.countChildren());
-//	mails.printElementTree(" ");
-	proxml.XMLElement mail;
-	
-	for(int i = 0; i < mails.countChildren(); i++){
-		
-		mail = mails.getChild(i);
-		
-		PD13Mail currentMail = new PD13Mail();
-		
-		currentMail.setNumber(mail.getIntAttribute("number"));
-		currentMail.setSize(mail.getIntAttribute("bytes"));
-		currentMail.setFrom(mail.getAttribute("from"));
-		currentMail.setSubject(mail.getAttribute("subject"));
-		currentMail.setMessage(mail.getAttribute("message"));
-		
-		mailManager.add(currentMail);
-	}
-	
-}
-
 
 // A function to send mail
 // doesn't work
-
 void sendMail() {
   // Create a session
   String host="smtp.gmail.com";

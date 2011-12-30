@@ -9,12 +9,10 @@
 import javax.mail.*;
 import javax.mail.internet.*;
 import controlP5.*;
-import proxml.*;
-
-// XML Stuff für offline Funktionalität
-
-proxml.XMLElement mails;
-proxml.XMLInOut xmlInOut;
+import org.json.*;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import java.io.FileWriter;
 
 // GUI Stuf from ControlP5
 ControlP5 controlP5;
@@ -30,35 +28,38 @@ String imapHost;
 String imapPort;
 String mailRecipient;
 
-
 void setup() {
 	size(400, 400);
-	
-	incoming = loadStrings("private.txt");
-	mailAcc = incoming[0];
-	password = incoming[1];
-	imapHost = incoming[2];
-	imapPort = incoming[3];
-	mailRecipient = incoming[4];  
-	
-	controlP5 = new ControlP5(this);
-	
-	xmlInOut = new proxml.XMLInOut(this);
-	
 	try{
-		xmlInOut.loadElement("mails.xml");
-		println("done");
-	}catch(Exception e){
-	  //if the xml file could not be loaded it has to be created
-	  xmlEvent(new proxml.XMLElement("mails"));
-	}
+		incoming = loadStrings("private.txt");
+		mailAcc = incoming[0];
+		password = incoming[1];
+		imapHost = incoming[2];
+		imapPort = incoming[3];
+		mailRecipient = incoming[4];
 	
+	}catch(Exception e){
+		String[] yourPrivate = new String[5];
+		yourPrivate[0] = "insert your email-adress here";
+		yourPrivate[1] = "insert your password here";
+		yourPrivate[2] = "insert your imap-server here";
+		yourPrivate[3] = "insert your port here";
+		yourPrivate[4] = "insert any recipient here";
+		
+		saveStrings("./data/private.txt", yourPrivate);
+		
+		println("A private.txt file was created in your data folder \n please insert your parameters!");
+		exit();
+	}
+	  	
+	controlP5 = new ControlP5(this);
+		
 	mailManager = new PD13MailManager();
 	// Function to check mail
-	checkMailsOnline();
+//	checkMailsOnline();
+	parseFromJSON();
+
 	// checkMailsOffline();
-//	mailManager.parse2XML();
-	
 //	mailManager.printInfo();
 	
 	// Function to send mail
@@ -78,11 +79,6 @@ void setup() {
 
 void draw() {
 	background(128);
-}
-
-void xmlEvent(proxml.XMLElement element){
-	mails = element;
-	// println(mails.getChild(0).countChildren() + " element2mails");
 }
 
 // GUI
