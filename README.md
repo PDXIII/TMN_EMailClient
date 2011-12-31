@@ -3,6 +3,7 @@
 This project startet with an class at the University of Applied Science Potsdam (FHP) hold by Prof. Boris Müller. The Topic of this class was _Remail_ _2012_ _–_ _reinventing_ _Email._ For better understanding I started sketching around with Processing and and Daniel Shiffman's mail tutorial. My original goal was to experiment with other visualizations of emails than the usual. But you know Processing projects!? __They grow!__ First I needed some GUI. For god sake there's controlP5! Thank you sojamo! Then local storage! Thank you blprnt and json.org! So, now the basic stuff is done. The software can now receive mails from a googlemail account (at least from mine). All necessary libraries ar included in the code directory – so you can start right out of the box. Have fun!
 ##How to use:
 Sure you have [Processing](http://processing.org/ "Processing") installed!
+
 1.	Download the package.
 2.	Unzip it in your Sketchbook.
 3.	Open with Processing.
