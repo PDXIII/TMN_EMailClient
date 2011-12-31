@@ -9,14 +9,12 @@ Sure you have [Processing](http://processing.org/ "Processing") installed!
 3.	Open with Processing.
 4.	Hit __Run__.
 5.	You'll get an alert that a private.txt file has been created in your data directory.
-6.	Open this private.txt file. It will look like this:
-	
+6.	Open this private.txt file. It will look like this:	
 	"insert your email-adress here";
 	"insert your password here";
 	"insert your imap-server here";
 	"insert your port here";
-	"insert any recipient here";
-	
+	"insert any recipient here";	
 7.	Please follow these instructions.
 8.	Save the private.txt file.
 9.	Back to Processing and hit __Run__.
@@ -24,12 +22,12 @@ Sure you have [Processing](http://processing.org/ "Processing") installed!
 11. The rest is self explaining.
 
 ##Resources:
-[Processing](http://processing.org/ "Processing") 
-[Textmate](http://macromates.com/ "My editor of choice. And thanx for TM2")
-[Email tutorial by Daniel Shiffman](http://www.shiffman.net/2007/11/13/e-mail-processing/ "Email tutorial by Daniel Shiffman")
-[JSON tutorial by blprnt](http://blog.blprnt.com/blog/blprnt/processing-json-the-new-york-times "JSON tutorial by blprnt") 
-[JSON.org](http://www.json.org/java/index.html "JSON for JAVA")
-[controlP5](http://www.sojamo.de/libraries/controlP5/ "nice GUI library for Processing")
+[Processing,](http://processing.org/ "Processing") 
+[Textmate,](http://macromates.com/ "My editor of choice. And thanx for TM2")
+[Email tutorial by Daniel Shiffman,](http://www.shiffman.net/2007/11/13/e-mail-processing/ "Email tutorial by Daniel Shiffman")
+[JSON tutorial by blprnt,](http://blog.blprnt.com/blog/blprnt/processing-json-the-new-york-times "JSON tutorial by blprnt") 
+[JSON.org,](http://www.json.org/java/index.html "JSON for JAVA")
+[controlP5,](http://www.sojamo.de/libraries/controlP5/ "nice GUI library for Processing")
 ##Boring legal stuff:
 Copyright (c) 2012, Peter Sekan aka [PDXIII](mailto:pdxiii@the-moron.net "Mail me!")
 
