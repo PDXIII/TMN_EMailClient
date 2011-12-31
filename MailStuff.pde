@@ -7,7 +7,7 @@
 // A function to check a mail account
 void checkMailsOnline() {
 	
-	currentMailManager = new PD13MailManager();
+	currentMailManager = new TMNMailManager();
 	
 	try {
 		Properties props = System.getProperties();
@@ -43,16 +43,16 @@ void checkMailsOnline() {
 		
 		for (int i=0; i < message.length; i++) {
 			
-			PD13Mail currentPD13Mail = new PD13Mail();
+			TMNMail currentTMNMail = new TMNMail();
 			
-			currentPD13Mail.setNumber(mailIndex);
-			currentPD13Mail.setFrom(message[i].getFrom()[0].toString());
-			currentPD13Mail.setSubject(message[i].getSubject());
-			currentPD13Mail.setSize(message[i].getSize());
+			currentTMNMail.setNumber(mailIndex);
+			currentTMNMail.setFrom(message[i].getFrom()[0].toString());
+			currentTMNMail.setSubject(message[i].getSubject());
+			currentTMNMail.setSize(message[i].getSize());
 			
 			
 			if (message[i].isMimeType("TEXT/PLAIN")) {
-			  currentPD13Mail.setMessage(message[i].getContent().toString());
+			  currentTMNMail.setMessage(message[i].getContent().toString());
 			}
 			
 			if (message[i].isMimeType("multipart/ALTERNATIVE")) {
@@ -65,13 +65,13 @@ void checkMailsOnline() {
 					
 					if (thisBodyPart.isMimeType("TEXT/PLAIN")) {
 						
-						currentPD13Mail.setMessage(thisBodyPart.getContent().toString());
+						currentTMNMail.setMessage(thisBodyPart.getContent().toString());
 					}
 				}
 			}
 			
 			mailIndex++;
-			currentMailManager.add(currentPD13Mail);
+			currentMailManager.add(currentTMNMail);
 		}
 		
 		// Close the session
@@ -97,7 +97,7 @@ void parse2JSON(){
 	storedMails[currentMailManager.getCount()+1] = outroJSON;
 	
 	for(int i = 0; i < currentMailManager.getCount(); i++){		
-		PD13Mail currentMail = (PD13Mail)currentMailManager.getMailAt(i);		
+		TMNMail currentMail = (TMNMail)currentMailManager.getMailAt(i);		
 		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\"," + "\"bytes\" :\"" + currentMail.getSize() + "\"," + "\"from\" :\"" +currentMail.getFrom() + "\"," + "\"subject\" :\"" +currentMail.getSubject() + "\"," + "\"message\" :\"" +currentMail.getMessage() + "\"" + "}";
 		if(i < currentMailManager.getCount()-1){
 			currentMail2JSONString = currentMail2JSONString + ",";
@@ -116,14 +116,14 @@ void parseFromJSON(){
 		JSONArray mails = allMails.getJSONArray("mails");
 		int total = allMails.getInt("total");
 		println ("There were " + total + " mails in your json file.");
-		currentMailManager = new PD13MailManager();
+		currentMailManager = new TMNMailManager();
 
 		for(int i = 0; i < total; i++){
 			
 			try{
 
 				JSONObject currentJSONObj = mails.optJSONObject(i);			
-				PD13Mail currentMail = new PD13Mail();			
+				TMNMail currentMail = new TMNMail();			
 				currentMail.setNumber(currentJSONObj.getInt("number"));
 				currentMail.setSize(currentJSONObj.getInt("bytes"));
 				currentMail.setFrom(currentJSONObj.getString("from"));

@@ -16,8 +16,8 @@ ControlP5 controlP5;
 DropdownList dropDownList;
 Textarea textArea;
 
-PD13MailManager mailManager;
-PD13MailManager currentMailManager;
+TMNMailManager mailManager;
+TMNMailManager currentMailManager;
 
 String []incoming = new String [5]; 
 String mailAcc;
@@ -52,8 +52,8 @@ void setup() {
 	  	
 	controlP5 = new ControlP5(this);
 		
-	mailManager = new PD13MailManager();
-	currentMailManager = new PD13MailManager();
+	mailManager = new TMNMailManager();
+	currentMailManager = new TMNMailManager();
 	// Function to check mail
 	parseFromJSON();
 	
@@ -87,8 +87,8 @@ void customize(DropdownList ddl) {
 	for (int i=0;i< mailManager.getCount();i++) {
 		ddl.valueLabel().style().marginTop = 3;
 		
-		PD13Mail currentPD13Mail = mailManager.getMailAt(i);
-		String thisLabel = currentPD13Mail.getShortFrom();
+		TMNMail currentTMNMail = mailManager.getMailAt(i);
+		String thisLabel = currentTMNMail.getShortFrom();
 		String buttonLabel = thisLabel;
 		ddl.addItem(buttonLabel, i);
 	}
@@ -107,15 +107,15 @@ void controlEvent(ControlEvent theEvent) {
 		// check if the Event was triggered from a ControlGroup
 		
 		int i = round(theEvent.group().value());
-		PD13Mail currentPD13Mail = mailManager.getMailAt(i);
-		String message = currentPD13Mail.getMessage();
+		TMNMail currentTMNMail = mailManager.getMailAt(i);
+		String message = currentTMNMail.getMessage();
 		textArea.setText(message);
 	} 
 	else if (theEvent.isController()) {
 		
 		int i = round(theEvent.controller().value());
-		PD13Mail currentPD13Mail = mailManager.getMailAt(i);
-		String message = currentPD13Mail.getMessage();
+		TMNMail currentTMNMail = mailManager.getMailAt(i);
+		String message = currentTMNMail.getMessage();
 		textArea.setText(message);
 	}
 }

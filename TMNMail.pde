@@ -1,4 +1,4 @@
-class PD13Mail {
+class TMNMail {
 	
 	// Variablen
 	int number;
@@ -7,7 +7,7 @@ class PD13Mail {
 	String subject;
 	String message;
 	// Constructor
-	PD13Mail(){		
+	TMNMail(){		
 		
 	}
 	
