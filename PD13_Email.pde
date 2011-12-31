@@ -10,9 +10,6 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import controlP5.*;
 import org.json.*;
-import org.json.JSONObject;
-import org.json.JSONArray;
-import java.io.FileWriter;
 
 // GUI Stuf from ControlP5
 ControlP5 controlP5;
@@ -20,6 +17,7 @@ DropdownList dropDownList;
 Textarea textArea;
 
 PD13MailManager mailManager;
+PD13MailManager currentMailManager;
 
 String []incoming = new String [5]; 
 String mailAcc;
@@ -55,12 +53,9 @@ void setup() {
 	controlP5 = new ControlP5(this);
 		
 	mailManager = new PD13MailManager();
+	currentMailManager = new PD13MailManager();
 	// Function to check mail
-//	checkMailsOnline();
 	parseFromJSON();
-
-	// checkMailsOffline();
-//	mailManager.printInfo();
 	
 	// Function to send mail
 	// doesn't work
@@ -72,8 +67,8 @@ void setup() {
 	"We will display the Messagetext here.\n"+
 	"Please, choose an Email from the Droplist", 
 	100, 100, 200, 200);
-	
-	dropDownList = controlP5.addDropdownList("Mails", 100, 100, 200, 120);
+	controlP5.addButton("onlineCheck",0,100,65,100,15);
+	dropDownList = controlP5.addDropdownList("Mails", 100, 100, 200, 200);
 	customize(dropDownList);
 }
 
@@ -84,16 +79,17 @@ void draw() {
 // GUI
 void customize(DropdownList ddl) {
 	ddl.setBackgroundColor(color(190));
-	ddl.setItemHeight(20);
+	ddl.setItemHeight(15);
 	ddl.setBarHeight(15);
 	ddl.captionLabel().set("Choose a Mail");
 	ddl.captionLabel().style().marginTop = 3;
 	ddl.captionLabel().style().marginLeft = 3;
-	ddl.valueLabel().style().marginTop = 3;
 	for (int i=0;i< mailManager.getCount();i++) {
+		ddl.valueLabel().style().marginTop = 3;
 		
 		PD13Mail currentPD13Mail = mailManager.getMailAt(i);
-		String buttonLabel = currentPD13Mail.getShortFrom();
+		String thisLabel = currentPD13Mail.getShortFrom();
+		String buttonLabel = thisLabel;
 		ddl.addItem(buttonLabel, i);
 	}
 	ddl.setColorBackground(color(60));
@@ -110,7 +106,7 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isGroup()) {
 		// check if the Event was triggered from a ControlGroup
 		
-		  int i = round(theEvent.group().value());
+		int i = round(theEvent.group().value());
 		PD13Mail currentPD13Mail = mailManager.getMailAt(i);
 		String message = currentPD13Mail.getMessage();
 		textArea.setText(message);
@@ -123,4 +119,9 @@ void controlEvent(ControlEvent theEvent) {
 		textArea.setText(message);
 	}
 }
+public void onlineCheck() {
+	println("a button event from onlineCheck: ");
+	thread("checkMailsOnline");
+}
+
 

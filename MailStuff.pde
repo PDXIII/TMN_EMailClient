@@ -7,7 +7,7 @@
 // A function to check a mail account
 void checkMailsOnline() {
 	
-	mailManager = new PD13MailManager();
+	currentMailManager = new PD13MailManager();
 	
 	try {
 		Properties props = System.getProperties();
@@ -71,13 +71,13 @@ void checkMailsOnline() {
 			}
 			
 			mailIndex++;
-			mailManager.add(currentPD13Mail);
+			currentMailManager.add(currentPD13Mail);
 		}
 		
 		// Close the session
 		folder.close(false);
 		store.close();
-
+		// Function to parse the downloaded mails int a JSON file on your system
 		parse2JSON();
 	} 
 	// This error handling isn't very good
@@ -86,67 +86,64 @@ void checkMailsOnline() {
 	}
 }
 
-void checkMailsOffline(){	
-}
-
+// Function to parse the downloaded mails int a JSON file on your system
 void parse2JSON(){	
-	println("parse 2 JSON NOW!");
-	String[] storedMails = new String[mailManager.getCount()+2];	
+	// println("parse 2 JSON NOW!");
+	String[] storedMails = new String[currentMailManager.getCount()+2];	
 	// String introJSON = "{\"mails\":[";
-	String introJSON = "{\"total\": \"" + mailManager.getCount() +"\",\"mails\":[";
+	String introJSON = "{\"total\": \"" + currentMailManager.getCount() +"\",\"mails\":[";
 	String outroJSON = "]}";
 	storedMails[0] = introJSON;
-	storedMails[mailManager.getCount()+1] = outroJSON;
+	storedMails[currentMailManager.getCount()+1] = outroJSON;
 	
-	for(int i = 0; i < mailManager.getCount(); i++){		
-		PD13Mail currentMail = (PD13Mail)mailManager.getMailAt(i);		
+	for(int i = 0; i < currentMailManager.getCount(); i++){		
+		PD13Mail currentMail = (PD13Mail)currentMailManager.getMailAt(i);		
 		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\"," + "\"bytes\" :\"" + currentMail.getSize() + "\"," + "\"from\" :\"" +currentMail.getFrom() + "\"," + "\"subject\" :\"" +currentMail.getSubject() + "\"," + "\"message\" :\"" +currentMail.getMessage() + "\"" + "}";
-		if(i < mailManager.getCount()-1){
+		if(i < currentMailManager.getCount()-1){
 			currentMail2JSONString = currentMail2JSONString + ",";
 		}		
-		println(currentMail2JSONString);	
+		// println(currentMail2JSONString);	
 		storedMails[i+1] = currentMail2JSONString;
 	}
-	saveStrings("./data/allMails.json", storedMails);	
+	saveStrings("./data/allMails.json", storedMails);
+	parseFromJSON();	
 }
 
 void parseFromJSON(){
-	
-	
-	try {
+
+	try {		
 		JSONObject allMails = new JSONObject(join(loadStrings("./data/allMails.json"), ""));
-		
 		JSONArray mails = allMails.getJSONArray("mails");
 		int total = allMails.getInt("total");
 		println ("There were " + total + " mails in your json file.");
-		
-		mailManager = new PD13MailManager();
-		// println(mails.toString());		
+		currentMailManager = new PD13MailManager();
 
 		for(int i = 0; i < total; i++){
 			
 			try{
-				JSONObject currentJSONObj = mails.optJSONObject(i);
-			
-				PD13Mail currentMail = new PD13Mail();
-			
+
+				JSONObject currentJSONObj = mails.optJSONObject(i);			
+				PD13Mail currentMail = new PD13Mail();			
 				currentMail.setNumber(currentJSONObj.getInt("number"));
 				currentMail.setSize(currentJSONObj.getInt("bytes"));
 				currentMail.setFrom(currentJSONObj.getString("from"));
 				currentMail.setSubject(currentJSONObj.getString("subject"));
-				currentMail.setMessage(currentJSONObj.getString("message"));
-			
-				mailManager.add(currentMail);
-				
+				currentMail.setMessage(currentJSONObj.getString("message"));			
+				currentMailManager.add(currentMail);				
 			}
 			catch(JSONException e){
 				println("Something is wrong with this JSONArray!!!");
-			
-			}
+			}		
 		}
+		
+		mailManager = currentMailManager;
+		println("OnlineCheck done!");
 	}
-	catch (JSONException e) {
+	catch (Exception e) {
+		
 		println ("There was an error parsing the JSONObject.");
+		// if there is something wring with the JSON file, we download the maisl out of the cloud
+		checkMailsOnline();
 	}
 }
 
