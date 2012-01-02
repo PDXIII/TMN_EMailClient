@@ -1,6 +1,6 @@
 #TMN_EMailClient
 ##About:
-This project startet with an class at the University of Applied Science Potsdam (FHP) hold by Prof. Boris Müller. The Topic of this class was _Remail_ _2012_ _–_ _reinventing_ _Email._ For better understanding I started sketching around with Processing and and Daniel Shiffman's mail tutorial. My original goal was to experiment with other visualizations of emails than the usual. But you know Processing projects!? __They grow!__ First I needed some GUI. For god sake there's controlP5! Thank you sojamo! Then local storage! Thank you blprnt and json.org! So, now the basic stuff is done. The software can now receive mails from a googlemail account (at least from mine). All necessary libraries ar included in the code directory – so you can start right out of the box. Have fun!
+This project startet with a class at the University of Applied Science Potsdam (FHP) hold by Prof. Boris Müller. The Topic of this class was _Remail_ _2012_ _–_ _reinventing_ _Email._ For better understanding I started sketching around with Processing and and Daniel Shiffman's mail tutorial. My original goal was to experiment with other visualizations of emails than the usual. But you know Processing projects!? __They grow!__ First I needed some GUI. For god sake there's controlP5! Thank you sojamo! Then local storage! Thank you blprnt and json.org! So, now the basic stuff is done. The software can now receive mails from a googlemail account (at least from mine). All necessary libraries ar included in the code directory – so you can start right out of the box. Have fun!
 ##How to use:
 Sure you have [Processing](http://processing.org/ "Processing") installed!
 
@@ -14,7 +14,6 @@ Sure you have [Processing](http://processing.org/ "Processing") installed!
 	"insert your password here";
 	"insert your imap-server here";
 	"insert your port here";
-	"insert any recipient here";	
 7.	Please follow these instructions.
 8.	Save the private.txt file.
 9.	Back to Processing and hit __Run__.
@@ -29,7 +28,7 @@ Sure you have [Processing](http://processing.org/ "Processing") installed!
 [JSON.org,](http://www.json.org/java/index.html "JSON for JAVA")
 [controlP5,](http://www.sojamo.de/libraries/controlP5/ "nice GUI library for Processing")
 ##Boring legal stuff:
-Copyright (c) 2012, Peter Sekan aka [PDXIII](mailto:pdxiii@the-moron.net "Mail me!")
+Copyright (c) 2012, Pete Sekan aka [PDXIII](mailto:pdxiii@the-moron.net "Mail me!")
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 

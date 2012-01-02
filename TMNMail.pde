@@ -3,10 +3,15 @@ class TMNMail {
 	// Variablen
 	int number;
 	int bytes;
+	Date sentDate;
 	String from;
 	String subject;
 	String message;
+	
+	PVector position ;
+	
 	// Constructor
+	
 	TMNMail(){		
 		
 	}
@@ -28,14 +33,29 @@ class TMNMail {
 		return number;
 	}
 	
-	void setFrom(String _from){
-		from = _from;
-		
-		from = from.replaceAll("\"", " ");
+	void setSentDate(Date _sentDate){
+		sentDate = _sentDate;
+	}
+	
+	Date getSentDate(){
+		return sentDate;
+	}
+	
+	void setTime(long _sentDate){
+		sentDate = new Date(_sentDate);
+	}
+	
+	long getTime(){
+		return sentDate.getTime();	
 	}
 	
 	String getFrom(){
 		return from;
+	}
+	
+	void setFrom(String _from){
+		from = _from;		
+		from = from.replaceAll("\"", " ");
 	}
 	
 	String getShortFrom(){
@@ -63,13 +83,22 @@ class TMNMail {
 	String getSubject(){
 		return subject;
 	}
-	
+		
 	void setMessage(String _message){
 		message = _message;	
-		message = message.replaceAll("\"", " ");
+		message = message.replaceAll("\"", " ");		
 	}
 	
 	String getMessage(){
 		return message;
+	}
+	
+	void setPos(PVector _pos){
+		position = new PVector();
+		position = _pos;
+	}
+	
+	void setPos(float _x, float _y){
+		position = new PVector(_x, _y);
 	}
 }
