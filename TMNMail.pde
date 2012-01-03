@@ -8,11 +8,10 @@ class TMNMail {
 	String subject;
 	String message;
 	
-	PVector position ;
-	
+		
 	// Constructor
 	
-	TMNMail(){		
+	TMNMail(){
 		
 	}
 	
@@ -91,14 +90,5 @@ class TMNMail {
 	
 	String getMessage(){
 		return message;
-	}
-	
-	void setPos(PVector _pos){
-		position = new PVector();
-		position = _pos;
-	}
-	
-	void setPos(float _x, float _y){
-		position = new PVector(_x, _y);
 	}
 }

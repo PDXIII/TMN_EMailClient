@@ -8,7 +8,7 @@
 // A function to check a mail account
 void checkMailsOnline() {
 	
-	currentMailManager = new TMNMailManager();
+	currentMailManager = new TMNMailManager("Current");
 	
 	try {
 		Properties props = System.getProperties();
@@ -44,18 +44,18 @@ void checkMailsOnline() {
 		
 		for (int i=0; i < message.length; i++) {
 			
-			TMNMail currentTMNMail = new TMNMail();
+			TMNMailVisu currentMail = new TMNMailVisu();
 			
-			currentTMNMail.setNumber(mailIndex);
-			currentTMNMail.setFrom(message[i].getFrom()[0].toString());
-			currentTMNMail.setSubject(message[i].getSubject());
-			currentTMNMail.setSize(message[i].getSize());
-			currentTMNMail.setSentDate(message[i].getSentDate());
+			currentMail.setNumber(mailIndex);
+			currentMail.setFrom(message[i].getFrom()[0].toString());
+			currentMail.setSubject(message[i].getSubject());
+			currentMail.setSize(message[i].getSize());
+			currentMail.setSentDate(message[i].getSentDate());
 			
 			
 			
 			if (message[i].isMimeType("TEXT/PLAIN")) {
-			  currentTMNMail.setMessage(message[i].getContent().toString());
+			  currentMail.setMessage(message[i].getContent().toString());
 			}
 			
 			if (message[i].isMimeType("multipart/ALTERNATIVE")) {
@@ -68,13 +68,14 @@ void checkMailsOnline() {
 					
 					if (thisBodyPart.isMimeType("TEXT/PLAIN")) {
 						
-						currentTMNMail.setMessage(thisBodyPart.getContent().toString());
+						currentMail.setMessage(thisBodyPart.getContent().toString());
 					}
 				}
 			}
 			
 			mailIndex++;
-			currentMailManager.add(currentTMNMail);
+			currentMailManager.add(currentMail);
+			println("message " + mailIndex + " of " + totalMessages);
 		}
 		
 		// Close the session
@@ -101,7 +102,7 @@ void parse2JSON(){
 	storedMails[currentMailManager.getCount()+1] = outroJSON;
 	
 	for(int i = 0; i < currentMailManager.getCount(); i++){		
-		TMNMail currentMail = (TMNMail)currentMailManager.getMailAt(i);		
+		TMNMailVisu currentMail = (TMNMailVisu)currentMailManager.getMailAt(i);		
 		String currentMail2JSONString =  "{" + "\"number\":\"" + currentMail.getNumber() + "\"," + "\"bytes\" :\"" + currentMail.getSize() + "\"," + "\"sentDate\" :" + currentMail.getTime() + "," + "\"from\" :\"" +currentMail.getFrom() + "\"," + "\"subject\" :\"" +currentMail.getSubject() + "\"," + "\"message\" :\"" +currentMail.getMessage() + "\"" + "}";
 		if(i < currentMailManager.getCount()-1){
 			currentMail2JSONString = currentMail2JSONString + ",";
@@ -120,14 +121,14 @@ void parseFromJSON(){
 		JSONArray mails = allMails.getJSONArray("mails");
 		int total = allMails.getInt("total");
 		println ("There are " + total + " mails in your json file.");
-		currentMailManager = new TMNMailManager();
+		currentMailManager = new TMNMailManager("Current");
 
 		for(int i = 0; i < total; i++){
 			
 			try{
 
 				JSONObject currentJSONObj = mails.optJSONObject(i);			
-				TMNMail currentMail = new TMNMail();			
+				TMNMailVisu currentMail = new TMNMailVisu();			
 				currentMail.setNumber(currentJSONObj.getInt("number"));
 				currentMail.setSize(currentJSONObj.getInt("bytes"));
 				currentMail.setTime(currentJSONObj.getLong("sentDate"));

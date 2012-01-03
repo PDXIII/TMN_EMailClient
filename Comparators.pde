@@ -1,9 +1,9 @@
 import java.util.Comparator;
 
 
-public class ComparatorTMNMAilBySize implements Comparator<TMNMail> {
+public class ComparatorTMNMAilBySize implements Comparator<TMNMailVisu> {
 	
-	public int compare(TMNMail m1, TMNMail m2) {
+	public int compare(TMNMailVisu m1, TMNMailVisu m2) {
 	
 		if (m1.getSize() == m2.getSize()) {
 			return 0;

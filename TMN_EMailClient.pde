@@ -11,7 +11,6 @@
 
 import javax.mail.*;
 import javax.mail.internet.*;
-import java.util.Comparator;
 
 import controlP5.*;
 import org.json.*;
@@ -20,7 +19,12 @@ import org.json.*;
 ControlP5 controlP5;
 DropdownList mailDDL;
 DropdownList sortDDL;
+DropdownList visuDDL;
 Textarea textArea;
+String[] visualizations = {"Rectangle", "Circle"};
+String[] sorting = {"From", "Size", "Size Reverse"};
+
+String currentVisu = "Rectangle";
 
 DateFormat dateFormat = DateFormat.getDateInstance();
 
@@ -33,8 +37,14 @@ String password;
 String imapHost;
 String imapPort;
 
+ArrayList fromList;
+ArrayList subjectList;
+
 void setup() {
-	size(1000, 600);
+	size(1024, 768);
+	background(128);
+	
+	frameRate(25);
 	try{
 		incoming = loadStrings("private.txt");
 		mailAcc = incoming[0];
@@ -57,18 +67,25 @@ void setup() {
 	  	
 	controlP5 = new ControlP5(this);
 		
-	mailManager = new TMNMailManager();
-	currentMailManager = new TMNMailManager();
+	mailManager = new TMNMailManager("Main");
 	// Function to check mail
 	parseFromJSON();
 
+	fromList = new ArrayList();
+	
+	parseFromList();
+	
+	subjectList = new ArrayList();
+	parseSubjectList();
 	initGUI();
 }
 
 void draw() {
-	background(128);
 	
-	view01();
+	background(128);
+	smooth();
+	mailManager.drawVisu(currentVisu);
+	drawLinks();		
 }
 
 // GUI
@@ -80,27 +97,35 @@ void initGUI(){
 	"We will display the Messagetext here.\n"+
 	"Please, choose an Email from the Droplist", 
 	100, 100, 200, 200);
-	controlP5.addButton("onlineCheck",0,100,65,100,15);
+	controlP5.addButton("onlineCheck",0,100,65,95,15);
+	controlP5.addButton("takeAPicture",0,205,65,95,15);
 	
 	mailDDL = controlP5.addDropdownList("Mails", 100, 100, 200, 200);
 	customizeMailDDL(mailDDL);
-	sortDDL = controlP5.addDropdownList("Sort", 310, 100, 200, 200);
+	sortDDL = controlP5.addDropdownList("Sort", 310, 100, 95, 200);
 	customizeSortDDL(sortDDL);
+	visuDDL = controlP5.addDropdownList("Visu", 415, 100, 95, 200);
+	customizeVisuDDL(visuDDL);
+
 }
 
 void redrawGUI(){
-	mailDDL.clear();
+	
+	controlP5.remove("Mails");
+	// controlP5.remove("Sort");
+	// 	controlP5.remove("Visu");
+	
+	mailDDL = controlP5.addDropdownList("Mails", 100, 100, 200, 200);
 	customizeMailDDL(mailDDL);
+	// 	sortDDL = controlP5.addDropdownList("Sort", 310, 100, 95, 200);
+	// 	customizeSortDDL(sortDDL);
+	// 	visuDDL = controlP5.addDropdownList("Visu", 415, 100, 95, 200);
+	// 	customizeVisuDDL(visuDDL);
+	
 }
 
 void customizeMailDDL(DropdownList ddl) {
-	ddl.setBackgroundColor(color(190));
-	ddl.setItemHeight(15);
-	ddl.setBarHeight(15);
-	ddl.captionLabel().style().marginTop = 3;
-	ddl.captionLabel().style().marginLeft = 3;
-	ddl.valueLabel().style().marginTop = 3;
-	ddl.valueLabel().style().marginLeft = 3;
+	customizeDDL(ddl);
 	
 	ddl.captionLabel().set("Choose a Mail");
 	
@@ -109,7 +134,7 @@ void customizeMailDDL(DropdownList ddl) {
 	
 	for (int i=0;i< mailManager.getCount();i++) {
 		
-		TMNMail currentTMNMail = mailManager.getMailAt(i);
+		TMNMailVisu currentTMNMail = mailManager.getMailAt(i);
 		String thisLabel = currentTMNMail.getShortFrom();
 		String buttonLabel = thisLabel;
 		ddl.addItem(buttonLabel, i);
@@ -118,6 +143,34 @@ void customizeMailDDL(DropdownList ddl) {
 }
 
 void customizeSortDDL(DropdownList ddl) {
+	customizeDDL(ddl);
+	
+	ddl.captionLabel().set("Sort Mails by");
+	
+	ddl.setColorBackground(color(60));
+	ddl.setColorActive(color(255, 128));
+	
+	for(int i = 0; i< sorting.length;i++){
+		ddl.addItem(sorting[i], i);
+	}
+
+
+}
+
+void customizeVisuDDL(DropdownList ddl) {
+	customizeDDL(ddl);
+	
+	ddl.captionLabel().set("Set Visualization");
+	
+	ddl.setColorBackground(color(60));
+	ddl.setColorActive(color(255, 128));
+	
+	for(int i = 0; i< visualizations.length;i++){
+		ddl.addItem(visualizations[i], i);
+	}
+}
+
+DropdownList customizeDDL(DropdownList ddl){
 	ddl.setBackgroundColor(color(190));
 	ddl.setItemHeight(15);
 	ddl.setBarHeight(15);
@@ -125,16 +178,8 @@ void customizeSortDDL(DropdownList ddl) {
 	ddl.captionLabel().style().marginLeft = 3;
 	ddl.valueLabel().style().marginTop = 3;
 	ddl.valueLabel().style().marginLeft = 3;
-	
-	ddl.captionLabel().set("Sort Mails by");
-	
-	ddl.setColorBackground(color(60));
-	ddl.setColorActive(color(255, 128));
-	
-	ddl.addItem("From", 0);
-	ddl.addItem("Size", 1);
-	ddl.addItem("Size reverse", 2);
-
+		
+	return ddl;
 }
 
 
@@ -151,7 +196,7 @@ void controlEvent(ControlEvent theEvent) {
 		if(theEvent.group().name() == "Mails"){
 			println("groupEvent");
 			int i = round(theEvent.group().value());
-			TMNMail currentTMNMail = mailManager.getMailAt(i);
+			TMNMailVisu currentTMNMail = mailManager.getMailAt(i);
 			String message = dateFormat.format(currentTMNMail.getSentDate());
 			message = message +"\n"+ currentTMNMail.getMessage();
 			textArea.setText(message);
@@ -159,64 +204,135 @@ void controlEvent(ControlEvent theEvent) {
 		
 		if(theEvent.group().name() == "Sort"){
 			println("groupEvent");
-			int i = round(theEvent.group().value());
+			println(theEvent.group().stringValue());			
 			
-			if(i == 0){
-				thread("sortByFrom");			
-			}
+			mailManager.sortBy(theEvent.group().stringValue(), currentVisu);
+			redrawGUI();
 			
-			if(i == 1){
-				thread("sortBySize");
-			}
+		}
+		
+		if(theEvent.group().name() == "Visu"){
+			println("groupEvent");
+			println(theEvent.group().stringValue());			
 			
-			if(i == 2){
-				thread("sortBySizeReverse");			
-			}
+			mailManager.drawVisu(theEvent.group().stringValue());
+			currentVisu = theEvent.group().stringValue();
+						
 		}
 	} 
 	else if (theEvent.isController()) {
 		println("NoGroupEvent");
 		
 		int i = round(theEvent.controller().value());
-		TMNMail currentTMNMail = mailManager.getMailAt(i);
+		TMNMailVisu currentTMNMail = mailManager.getMailAt(i);
 		String message = dateFormat.format(currentTMNMail.getSentDate());
 		message = message +"\n"+ currentTMNMail.getMessage();
 		textArea.setText(message);
 	}
+	
 }
+
+void parseFromList(){
+
+	for(int i = 0; i < mailManager.getCount(); i++){
+		
+		boolean bingo = false;
+		
+		// println(i);
+		TMNMailVisu currentMail = mailManager.getMailAt(i);
+		
+		if(fromList.isEmpty()){
+			
+			TMNMailManager newMM = new TMNMailManager(currentMail.getShortFrom());
+			fromList.add(newMM);
+			
+		}else{
+			
+			for(int j = 0; j < fromList.size(); j++){
+				
+				TMNMailManager currentMM = (TMNMailManager) fromList.get(j);
+				// println("currentMailName " + currentMail.getShortFrom() +" / currentMMName "+ currentMM.getName());
+				
+				if(currentMail.getShortFrom().equals(currentMM.getName())){
+					currentMM.add(currentMail);
+					
+					// println("Bingo!");
+					bingo = true;					
+				}
+			}
+			if(!bingo){
+				TMNMailManager newMM = new TMNMailManager(currentMail.getShortFrom());
+			    fromList.add(newMM);
+			    // println(newMM.getName());
+			}else{
+				bingo = false;
+			}
+		}		
+	}
+	// set Color of the MailManagers in the fromList 
+	for(int i = 0; i < fromList.size(); i++){
+		TMNMailManager currentMM = (TMNMailManager) fromList.get(i);
+		color currentColor = color((255/fromList.size()*i),255,255);
+		currentMM.setColor(currentColor);
+		currentMM.drawVisu("Color");
+		println(currentMM.getName() + " " + currentColor);
+	}
+	// println("Array fromList contains: "+fromList.size());
+}
+
+void parseSubjectList(){
+
+	for(int i = 0; i < mailManager.getCount(); i++){
+		
+		boolean bingo = false;
+		
+		// println(i);
+		TMNMailVisu currentMail = mailManager.getMailAt(i);
+		
+		if(subjectList.isEmpty()){
+			
+			TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
+			subjectList.add(newMM);
+			
+		}else{
+			
+			for(int j = 0; j < subjectList.size(); j++){
+				
+				TMNMailManager currentMM = (TMNMailManager) subjectList.get(j);
+				// println("currentMailName " + currentMail.getShortFrom() +" / currentMMName "+ currentMM.getName());
+				
+				if(currentMM.getName().contains(currentMail.getSubject())){
+					currentMM.add(currentMail);
+					
+					// println("Bingo!");
+					bingo = true;					
+				}
+			}
+			if(!bingo){
+				TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
+			    subjectList.add(newMM);
+			    // println(newMM.getName());
+			}else{
+				bingo = false;
+			}
+		}		
+	}
+	// println("Array fromList contains: "+fromList.size());
+}
+
+void drawLinks(){
+	for(int i = 0; i < subjectList.size(); i++){
+		TMNMailManager currentMM = (TMNMailManager) subjectList.get(i);
+		currentMM.drawVisu("Links");
+	}
+}
+
 public void onlineCheck() {
 	println("a button event from onlineCheck: ");
 	thread("checkMailsOnline");
 }
 
-public void view01(){
-
-	noStroke();
-	fill(255);
-
-	for(int i = 0; i < mailManager.getCount();i++){
+void takeAPicture() {
+	save("./output/TMNEMail-" + year() + month() + day() + minute() + second() + ".tif");
 	
-		TMNMail currentMail = mailManager.getMailAt(i);
-		float xStep = width / mailManager.getCount();
-		float xPos = i * xStep;
-		float yPos = 10; 
-		float xSize = 2;
-		float ySize = currentMail.getSize()/20;
-		rect(xPos, yPos, xSize, ySize);
-	}
-}
-
-public void sortByFrom(){
-	mailManager.sortByShortFrom();
-	redrawGUI();
-}
-
-public void sortBySize(){
-	mailManager.sortBySize();
-	redrawGUI();
-}
-
-public void sortBySizeReverse(){
-	mailManager.sortBySizeReverse();
-	redrawGUI();
 }
