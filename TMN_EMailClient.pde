@@ -21,10 +21,10 @@ DropdownList mailDDL;
 DropdownList sortDDL;
 DropdownList visuDDL;
 Textarea textArea;
-String[] visualizations = {"Rectangle", "Circle"};
-String[] sorting = {"From", "Size", "Size Reverse"};
+String[] visualizations = {"Rectangle", "Circle", "Bezier", "Circulation"};
+String[] sorting = {"From", "Size", "Size Reverse", "Time", "Time Reverse"};
 
-String currentVisu = "Rectangle";
+String currentVisu = "Bezier";
 
 DateFormat dateFormat = DateFormat.getDateInstance();
 
@@ -36,6 +36,8 @@ String mailAcc;
 String password;
 String imapHost;
 String imapPort;
+
+String jsonFile = "./data/allMails.json";
 
 ArrayList fromList;
 ArrayList subjectList;
@@ -269,6 +271,10 @@ void parseFromList(){
 			}
 		}		
 	}
+	
+	Comparator<TMNMailManager> comp = new ComparatorTMNMAilMByName();
+    Collections.sort(fromList, comp);
+	
 	// set Color of the MailManagers in the fromList 
 	for(int i = 0; i < fromList.size(); i++){
 		TMNMailManager currentMM = (TMNMailManager) fromList.get(i);
@@ -333,6 +339,6 @@ public void onlineCheck() {
 }
 
 void takeAPicture() {
-	save("./output/TMNEMail-" + year() + month() + day() + minute() + second() + ".tif");
+	save("./output/TMNEMail-" + year() + month() + day() + hour() + minute() + second() + ".tif");
 	
 }

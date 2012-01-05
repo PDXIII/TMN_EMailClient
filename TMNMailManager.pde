@@ -74,6 +74,16 @@ class TMNMailManager {
 			sortBySizeReverse();			
 		}
 		
+		if(_kindSort == "Time"){
+			sortByTime();			
+		}
+		
+		if(_kindSort == "Time Reverse"){
+			sortByTimeReverse();			
+		}
+		
+
+		
 		drawVisu(_kindVisu);	
 	}
 	
@@ -101,6 +111,20 @@ class TMNMailManager {
         Collections.sort(tmnMails, comp);
 		Collections.reverse(tmnMails);
 	}
+	
+	void sortByTime(){
+	
+		Comparator<TMNMailVisu> comp = new ComparatorTMNMAilByTime();
+        Collections.sort(tmnMails, comp);
+	}
+	
+	void sortByTimeReverse(){
+	
+		Comparator<TMNMailVisu> comp = new ComparatorTMNMAilByTime();
+        Collections.sort(tmnMails, comp);
+		Collections.reverse(tmnMails);
+	}
+	
 
 	void drawVisu(String _kind){
 		
@@ -125,7 +149,7 @@ class TMNMailManager {
 				
 				float xStep = 1024 / getCount();
 				float xPos = i * xStep +10;
-				float yPos = 150; 
+				float yPos = 300; 
 		
 				currentMail.setPos(xPos, yPos);
 				currentMail.drawRect();	
@@ -136,20 +160,64 @@ class TMNMailManager {
 				stroke(255,100);
 				strokeWeight(1);
 				
+				// int identifier = currentMail.getNumber()%2;
+				int identifier = i%2;
+				
+				TMNMailVisu nextMail = new TMNMailVisu();
+				
 				if(i < tmnMails.size()-1){
-					TMNMailVisu nextMail = (TMNMailVisu)tmnMails.get(i+1);
-					bezier(currentMail.getPosX(), currentMail.getPosY(), currentMail.getPosX()-10, currentMail.getPosY()-100, nextMail.getPosX()+10, nextMail.getPosY()-100, nextMail.getPosX(), nextMail.getPosY());
+					nextMail = (TMNMailVisu)tmnMails.get(i+1);
 					
 				}
 				else{					
-					TMNMailVisu nextMail = (TMNMailVisu)tmnMails.get(0);
-					bezier(currentMail.getPosX(), currentMail.getPosY(), currentMail.getPosX()-10, currentMail.getPosY()-100, nextMail.getPosX()+10, nextMail.getPosY()-100, nextMail.getPosX(), nextMail.getPosY());
-					
+					nextMail = (TMNMailVisu)tmnMails.get(0);		
 				}
+				PVector point1 = new PVector(currentMail.getPosX(), currentMail.getPosY());
+				PVector point2 = new PVector(nextMail.getPosX(), nextMail.getPosY());
+				PVector anchor1;
+				PVector anchor2;
+				if(identifier==1){
+					anchor1 = new PVector(currentMail.getPosX(), currentMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+					anchor2 = new PVector(nextMail.getPosX(), nextMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				}
+				else{
+					anchor1 = new PVector(currentMail.getPosX(), currentMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+					anchor2 = new PVector(nextMail.getPosX(), nextMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				}
+				bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
+				
 			}
+			else if(_kind == "Bezier"){
+
+				noFill();
+				
+				float xStep = 1024 / getCount();
+				float xPos = i * xStep;
+				float yPos = 768;
+				
+				currentMail.setPos(xPos, yPos);
+				currentMail.drawBezier(tmnMails.size());
+			}
+			else if(_kind == "Circulation"){
+
+				noFill();
+				int angle = (int) ((currentMail.getTime()/1000) % 31436000) /12;
+				println(angle);
+				int radius = 500;
+				// float angle = (360/tmnMails.size())*i;
+				
+			    float xPos = width/2 + cos(radians(angle))*(radius/2);
+			    float yPos = height/2 + sin(radians(angle))*(radius/2);
+				
+				
+				currentMail.setPos(xPos, yPos);
+				currentMail.drawCircle();
+			}
+
 			else if(_kind =="Color"){
 				currentMail.setColor(mainColor);		
-			}
+			}			
+			
 		}
 	}
 }

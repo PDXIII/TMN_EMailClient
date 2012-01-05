@@ -110,14 +110,14 @@ void parse2JSON(){
 		// println(currentMail2JSONString);	
 		storedMails[i+1] = currentMail2JSONString;
 	}
-	saveStrings("./data/allMails.json", storedMails);
+	saveStrings(jsonFile, storedMails);
 	parseFromJSON();	
 }
 
 void parseFromJSON(){
 
 	try {		
-		JSONObject allMails = new JSONObject(join(loadStrings("./data/allMails.json"), ""));
+		JSONObject allMails = new JSONObject(join(loadStrings(jsonFile), ""));
 		JSONArray mails = allMails.getJSONArray("mails");
 		int total = allMails.getInt("total");
 		println ("There are " + total + " mails in your json file.");

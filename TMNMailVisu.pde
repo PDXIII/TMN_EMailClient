@@ -74,10 +74,10 @@ public class TMNMailVisu extends TMNMail{
 	void drawRect(){
 		
 		noStroke();
-		fill(mainColor);
+		fill(mainColor,100);
 		
 		float xSize = 1;
-		float ySize = getSize()/20;
+		float ySize = getSize()/25;
 		rect(position.x, position.y, xSize, ySize);
 	}
 	
@@ -89,6 +89,19 @@ public class TMNMailVisu extends TMNMail{
 		float xSize = getSize()/100;
 		float ySize = getSize()/100;
 		ellipse(position.x, position.y, xSize, ySize);
+	}
+	
+	void drawBezier(int _mailCount){
+		stroke(getColor(), 100);
+		strokeWeight(getSize()/2000);
+				
+		PVector point1  = new PVector(getPosX(), getPosY());
+		PVector anchor1 = new PVector(getPosX(), 468);
+		PVector anchor2 = new PVector(1024/_mailCount*getNumber(), 300);
+		PVector point2  = new PVector(1024/_mailCount*getNumber(), 0);
+				
+		bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
+		
 	}
 
 }
