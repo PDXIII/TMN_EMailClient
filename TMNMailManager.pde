@@ -172,19 +172,31 @@ class TMNMailManager {
 				else{					
 					nextMail = (TMNMailVisu)tmnMails.get(0);		
 				}
+				// PVector point1 = new PVector(currentMail.getPosX(), currentMail.getPosY());
+				// PVector point2 = new PVector(nextMail.getPosX(), nextMail.getPosY());
+				// PVector anchor1;
+				// PVector anchor2;
+				// if(identifier==1){
+				// 	anchor1 = new PVector(currentMail.getPosX()-sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, currentMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				// 	anchor2 = new PVector(nextMail.getPosX()-sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, nextMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				// }
+				// else{
+				// 	anchor1 = new PVector(currentMail.getPosX()+sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, currentMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				// 	anchor2 = new PVector(nextMail.getPosX()+sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, nextMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
+				// }
+				// bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
+				
 				PVector point1 = new PVector(currentMail.getPosX(), currentMail.getPosY());
 				PVector point2 = new PVector(nextMail.getPosX(), nextMail.getPosY());
-				PVector anchor1;
-				PVector anchor2;
-				if(identifier==1){
-					anchor1 = new PVector(currentMail.getPosX(), currentMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-					anchor2 = new PVector(nextMail.getPosX(), nextMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				}
-				else{
-					anchor1 = new PVector(currentMail.getPosX(), currentMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-					anchor2 = new PVector(nextMail.getPosX(), nextMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				}
+				
+				float radius = 15 * sqrt(3*abs(currentMail.getAngle() - nextMail.getAngle())); 
+
+				PVector anchor1 = new PVector(point1.x + cos(radians(180 + currentMail.getAngle()))*(radius/2), point1.y + sin(radians(180 + currentMail.getAngle()))*(radius/2));
+				PVector anchor2 = new PVector(point2.x + cos(radians(180 + nextMail.getAngle()))*(radius/2), point2.y + sin(radians(180 + nextMail.getAngle()))*(radius/2));
+				
+			   
 				bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
+				
 				
 			}
 			else if(_kind == "Bezier"){
@@ -199,19 +211,21 @@ class TMNMailManager {
 				currentMail.drawBezier(tmnMails.size());
 			}
 			else if(_kind == "Circulation"){
-
+				
 				noFill();
-				int angle = (int) ((currentMail.getTime()/1000) % 31436000) /12;
-				println(angle);
+				int time = currentMail.getSentDate().getHours()*60 + currentMail.getSentDate().getMinutes();
+				int angle = 360/12 * time/60;
+				// int angle = 360/12 * currentMail.getSentDate().getHours();
+				// println(angle + " " + currentMail.getSentDate().getHours());
 				int radius = 500;
-				// float angle = (360/tmnMails.size())*i;
 				
 			    float xPos = width/2 + cos(radians(angle))*(radius/2);
-			    float yPos = height/2 + sin(radians(angle))*(radius/2);
-				
+			    float yPos = height/2 + sin(radians(angle))*(radius/2);				
 				
 				currentMail.setPos(xPos, yPos);
+				currentMail.setAngle(angle);
 				currentMail.drawCircle();
+				// currentMail.drawRectInCircle();
 			}
 
 			else if(_kind =="Color"){

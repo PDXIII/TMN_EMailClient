@@ -24,7 +24,7 @@ Textarea textArea;
 String[] visualizations = {"Rectangle", "Circle", "Bezier", "Circulation"};
 String[] sorting = {"From", "Size", "Size Reverse", "Time", "Time Reverse"};
 
-String currentVisu = "Bezier";
+String currentVisu = "Circulation";
 
 DateFormat dateFormat = DateFormat.getDateInstance();
 

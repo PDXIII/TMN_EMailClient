@@ -7,11 +7,14 @@ public class TMNMailVisu extends TMNMail{
 	
 	color mainColor;
 	
+	int angle;
+	
 	//Constructor
 	TMNMailVisu(){
 		
 		colorMode(HSB);
 		mainColor = color (0,0,0);
+		angle = 0;
 		
 	}
 	
@@ -71,6 +74,14 @@ public class TMNMailVisu extends TMNMail{
 		return mainColor;
 	}
 	
+	void setAngle(int _angle){
+		angle = _angle;
+	}
+	
+	int getAngle(){
+		return angle;
+	}
+	
 	void drawRect(){
 		
 		noStroke();
@@ -80,6 +91,22 @@ public class TMNMailVisu extends TMNMail{
 		float ySize = getSize()/25;
 		rect(position.x, position.y, xSize, ySize);
 	}
+	
+	void drawRectInCircle(){
+		
+		noStroke();
+		fill(mainColor,100);
+		rectMode(CENTER);
+		float xSize = 1;
+		float ySize = getSize()/25;
+		pushMatrix();
+		translate(position.x, position.y);
+		rotate(radians(angle-90));
+		rect(0,0, xSize, ySize);
+		
+		popMatrix();
+	}
+
 	
 	void drawCircle(){
 		
