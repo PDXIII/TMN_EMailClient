@@ -5,16 +5,13 @@ public class TMNMailVisu extends TMNMail{
 	PVector position;
 	PVector destination;
 	
-	color mainColor;
+	color mainColor = color (0,0,0);;
 	
-	int angle;
+	int angle = 0;
 	
 	//Constructor
 	TMNMailVisu(){
 		
-		colorMode(HSB);
-		mainColor = color (0,0,0);
-		angle = 0;
 		
 	}
 	

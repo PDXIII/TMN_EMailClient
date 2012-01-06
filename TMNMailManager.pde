@@ -2,7 +2,10 @@ class TMNMailManager {
 	
 // Variablen
 	String name;
+	
 	ArrayList tmnMails;
+	ArrayList fromList;
+	
 	color mainColor;	
 // Constructor
 	TMNMailManager(String _name){
@@ -81,10 +84,48 @@ class TMNMailManager {
 		if(_kindSort == "Time Reverse"){
 			sortByTimeReverse();			
 		}
-		
-
-		
+			
 		drawVisu(_kindVisu);	
+	}
+	
+	void initFromList(){
+		
+		fromList = new ArrayList();
+		
+		TMNMailVisu currentMail;
+		String newFrom;
+		
+		for(int i = 0; i < getCount(); i++){
+				
+			currentMail = getMailAt(i);
+			newFrom = currentMail.getShortFrom();
+			
+			if(fromList.isEmpty() || !fromList.contains(newFrom)){			
+				fromList.add(newFrom);
+			}
+		}
+	
+		println(fromList.toString());
+		Comparator<String> comp = new ComparatorArrayListByFrom();
+	    Collections.sort(fromList, comp);
+		println(fromList.toString());
+		
+		//setting Colors
+		
+		color[] fromColors = new color[fromList.size()];
+		
+		for(int j = 0; j < fromList.size(); j++){
+			fromColors[j] = color((255/fromList.size())*j,255,255);
+		}
+		
+		for(int k = 0; k < getCount(); k++){
+			
+			currentMail = getMailAt(k);
+			newFrom = currentMail.getShortFrom();
+			
+			int colorIndex = fromList.indexOf(newFrom);
+			currentMail.setColor(fromColors[colorIndex]);			
+		}		
 	}
 	
 	void sortByShortFrom(){
@@ -224,8 +265,8 @@ class TMNMailManager {
 				
 				currentMail.setPos(xPos, yPos);
 				currentMail.setAngle(angle);
-				currentMail.drawCircle();
-				// currentMail.drawRectInCircle();
+				// currentMail.drawCircle();
+				currentMail.drawRectInCircle();
 			}
 
 			else if(_kind =="Color"){

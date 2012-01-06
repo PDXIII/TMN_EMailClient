@@ -40,3 +40,12 @@ public class ComparatorTMNMAilMByName implements Comparator<TMNMailManager> {
         return m1.getName().compareToIgnoreCase(m2.getName());
 	}	
 }
+
+public class ComparatorArrayListByFrom implements Comparator<String> {
+	
+	public int compare(String m1, String m2) {
+		
+        return m1.compareToIgnoreCase(m2);
+	}	
+}
+

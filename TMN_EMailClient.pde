@@ -39,7 +39,6 @@ String imapPort;
 
 String jsonFile = "./data/allMails.json";
 
-ArrayList fromList;
 ArrayList subjectList;
 
 void setup() {
@@ -47,6 +46,9 @@ void setup() {
 	background(128);
 	
 	frameRate(25);
+	
+	colorMode(HSB);
+	
 	try{
 		incoming = loadStrings("private.txt");
 		mailAcc = incoming[0];
@@ -72,11 +74,10 @@ void setup() {
 	mailManager = new TMNMailManager("Main");
 	// Function to check mail
 	parseFromJSON();
+	
+	mailManager.initFromList();
 
-	fromList = new ArrayList();
-	
-	parseFromList();
-	
+		
 	subjectList = new ArrayList();
 	parseSubjectList();
 	initGUI();
@@ -234,57 +235,6 @@ void controlEvent(ControlEvent theEvent) {
 	
 }
 
-void parseFromList(){
-
-	for(int i = 0; i < mailManager.getCount(); i++){
-		
-		boolean bingo = false;
-		
-		// println(i);
-		TMNMailVisu currentMail = mailManager.getMailAt(i);
-		
-		if(fromList.isEmpty()){
-			
-			TMNMailManager newMM = new TMNMailManager(currentMail.getShortFrom());
-			fromList.add(newMM);
-			
-		}else{
-			
-			for(int j = 0; j < fromList.size(); j++){
-				
-				TMNMailManager currentMM = (TMNMailManager) fromList.get(j);
-				// println("currentMailName " + currentMail.getShortFrom() +" / currentMMName "+ currentMM.getName());
-				
-				if(currentMail.getShortFrom().equals(currentMM.getName())){
-					currentMM.add(currentMail);
-					
-					// println("Bingo!");
-					bingo = true;					
-				}
-			}
-			if(!bingo){
-				TMNMailManager newMM = new TMNMailManager(currentMail.getShortFrom());
-			    fromList.add(newMM);
-			    // println(newMM.getName());
-			}else{
-				bingo = false;
-			}
-		}		
-	}
-	
-	Comparator<TMNMailManager> comp = new ComparatorTMNMAilMByName();
-    Collections.sort(fromList, comp);
-	
-	// set Color of the MailManagers in the fromList 
-	for(int i = 0; i < fromList.size(); i++){
-		TMNMailManager currentMM = (TMNMailManager) fromList.get(i);
-		color currentColor = color((255/fromList.size()*i),255,255);
-		currentMM.setColor(currentColor);
-		currentMM.drawVisu("Color");
-		println(currentMM.getName() + " " + currentColor);
-	}
-	// println("Array fromList contains: "+fromList.size());
-}
 
 void parseSubjectList(){
 
