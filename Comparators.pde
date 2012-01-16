@@ -33,13 +33,13 @@ public class ComparatorTMNMAilByTime implements Comparator<TMNMailVisu> {
 	}	
 }
 
-public class ComparatorTMNMAilMByName implements Comparator<TMNMailManager> {
-	
-	public int compare(TMNMailManager m1, TMNMailManager m2) {
-		
-        return m1.getName().compareToIgnoreCase(m2.getName());
-	}	
-}
+// public class ComparatorTMNMAilMByName implements Comparator<TMNMailManager> {
+// 	
+// 	public int compare(TMNMailManager m1, TMNMailManager m2) {
+// 		
+//         return m1.getName().compareToIgnoreCase(m2.getName());
+// 	}	
+// }
 
 public class ComparatorArrayListByFrom implements Comparator<String> {
 	

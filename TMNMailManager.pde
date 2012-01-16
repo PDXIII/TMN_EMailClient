@@ -3,28 +3,20 @@ class TMNMailManager {
 // Variablen
 	String name;
 	
-	ArrayList tmnMails;
-	ArrayList fromList;
+	ArrayList<TMNMailVisu> tmnMails;
+	ArrayList<String> fromList;
+	ArrayList<String> subjectList;
+	ArrayList<ThreadLine> threadLines;
 	
-	color mainColor;	
 // Constructor
 	TMNMailManager(String _name){
 		
-		colorMode(HSB);
-		mainColor = color (0,0,0);
 		this.name = _name;
 		tmnMails = new ArrayList();		
 	}
 	
 	// Methoden
-	String getName(){
-		return name;
-	}
 	
-	void add(TMNMail _tmnMail){
-		TMNMail currentTMNMail = _tmnMail;		
-		tmnMails.add(currentTMNMail);		
-	}
 	
 	void add(TMNMailVisu _tmnMail){
 		TMNMailVisu currentTMNMail = _tmnMail;		
@@ -43,18 +35,6 @@ class TMNMailManager {
 		
 	int getCount(){		
 		return tmnMails.size();
-	}
-	
-	void setColor(color _col){
-		mainColor = _col;
-	}
-	
-	void setColor(float _h, float _s, float _b){
-		mainColor = color(_h, _s, _b);
-	}
-	
-	color getColor(){
-		return mainColor;
 	}
 	
 	TMNMailVisu getMailAt(int _index){		
@@ -105,14 +85,14 @@ class TMNMailManager {
 			}
 		}
 	
-		println(fromList.toString());
 		Comparator<String> comp = new ComparatorArrayListByFrom();
 	    Collections.sort(fromList, comp);
-		println(fromList.toString());
 		
 		//setting Colors
 		
 		color[] fromColors = new color[fromList.size()];
+		
+		println("Number of Senders: " + fromList.size());
 		
 		for(int j = 0; j < fromList.size(); j++){
 			fromColors[j] = color((255/fromList.size())*j,255,255);
@@ -125,6 +105,91 @@ class TMNMailManager {
 			
 			int colorIndex = fromList.indexOf(newFrom);
 			currentMail.setColor(fromColors[colorIndex]);			
+		}		
+	}
+	
+	void initSubjectList(){
+		
+		subjectList = new ArrayList();
+		TMNMailVisu currentMail;
+		String newSubject;
+		String currentSubject;
+		
+		for(int i = 0; i < getCount(); i++){
+				
+			currentMail = getMailAt(i);
+			newSubject = currentMail.getSubject();
+			
+			if(subjectList.isEmpty()){			
+				subjectList.add(newSubject);
+			}
+			else{
+				
+				boolean bingo = false;
+				for(int j = 0; j < subjectList.size(); j++){
+					currentSubject = subjectList.get(j);
+					if(newSubject.contains(currentSubject)){
+						bingo = true;
+						currentMail.setSubjectIndex(j);
+					}
+				}
+				if(!bingo){
+					subjectList.add(newSubject);
+					currentMail.setSubjectIndex(subjectList.size()-1);
+					
+				}
+				else{
+					bingo = false;
+				}
+			}
+		}
+		
+		Comparator<String> comp = new ComparatorArrayListByFrom();
+	    ArrayList newSubjectList = new ArrayList(subjectList);
+	    Collections.sort(newSubjectList, comp);
+		threadLines = new ArrayList();
+		for(int l = 0; l < newSubjectList.size(); l++){
+		
+			ThreadLine currentTL = new ThreadLine(l);
+			threadLines.add(currentTL);
+		}
+		
+		// println("still ok");
+		
+		for(int k = 0; k < tmnMails.size(); k++){
+						
+			currentMail = (TMNMailVisu)tmnMails.get(k);
+			currentSubject = subjectList.get(currentMail.getSubjectIndex());			
+			int newSubjectIndex = newSubjectList.indexOf(currentSubject);
+			currentMail.setSubjectIndex(newSubjectIndex);
+		}
+		// println(subjectList.size());	
+	}
+	
+	void updateThreadLines(){
+		for(int i = 0; i < threadLines.size(); i++){
+			threadLines.get(i).clear();
+		}
+		
+		for(int j = 0; j < tmnMails.size(); j++){
+			
+			TMNMailVisu currentMail = tmnMails.get(j);
+			PVector currentVector = currentMail.getPosition();
+			int currentSubjectIndex = currentMail.getSubjectIndex();
+			
+			threadLines.get(currentSubjectIndex).add(currentVector);
+		}
+		
+	}
+	
+	void drawThreadLines(){
+		for(int i = 0; i < threadLines.size(); i++){
+			
+			ThreadLine currentTL = threadLines.get(i);
+			
+			if(currentTL.vectors.size() > 1){
+				currentTL.drawLine();
+			}
 		}		
 	}
 	
@@ -196,50 +261,7 @@ class TMNMailManager {
 				currentMail.drawRect();	
 	
 			}
-			else if(_kind == "Links"){
-				noFill();
-				stroke(255,100);
-				strokeWeight(1);
-				
-				// int identifier = currentMail.getNumber()%2;
-				int identifier = i%2;
-				
-				TMNMailVisu nextMail = new TMNMailVisu();
-				
-				if(i < tmnMails.size()-1){
-					nextMail = (TMNMailVisu)tmnMails.get(i+1);
-					
-				}
-				else{					
-					nextMail = (TMNMailVisu)tmnMails.get(0);		
-				}
-				// PVector point1 = new PVector(currentMail.getPosX(), currentMail.getPosY());
-				// PVector point2 = new PVector(nextMail.getPosX(), nextMail.getPosY());
-				// PVector anchor1;
-				// PVector anchor2;
-				// if(identifier==1){
-				// 	anchor1 = new PVector(currentMail.getPosX()-sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, currentMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				// 	anchor2 = new PVector(nextMail.getPosX()-sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, nextMail.getPosY()-sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				// }
-				// else{
-				// 	anchor1 = new PVector(currentMail.getPosX()+sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, currentMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				// 	anchor2 = new PVector(nextMail.getPosX()+sqrt(abs(nextMail.getPosY() - currentMail.getPosY()))*10, nextMail.getPosY()+sqrt(abs(nextMail.getPosX() - currentMail.getPosX()))*10);
-				// }
-				// bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
-				
-				PVector point1 = new PVector(currentMail.getPosX(), currentMail.getPosY());
-				PVector point2 = new PVector(nextMail.getPosX(), nextMail.getPosY());
-				
-				float radius = 15 * sqrt(3*abs(currentMail.getAngle() - nextMail.getAngle())); 
-
-				PVector anchor1 = new PVector(point1.x + cos(radians(180 + currentMail.getAngle()))*(radius/2), point1.y + sin(radians(180 + currentMail.getAngle()))*(radius/2));
-				PVector anchor2 = new PVector(point2.x + cos(radians(180 + nextMail.getAngle()))*(radius/2), point2.y + sin(radians(180 + nextMail.getAngle()))*(radius/2));
-				
-			   
-				bezier(point1.x, point1.y, anchor1.x, anchor1.y, anchor2.x, anchor2.y, point2.x, point2.y);
-				
-				
-			}
+	
 			else if(_kind == "Bezier"){
 
 				noFill();
@@ -268,11 +290,7 @@ class TMNMailManager {
 				// currentMail.drawCircle();
 				currentMail.drawRectInCircle();
 			}
-
-			else if(_kind =="Color"){
-				currentMail.setColor(mainColor);		
-			}			
-			
-		}
+  		}
+		//updateThreadLines();
 	}
 }

@@ -47,7 +47,7 @@ void setup() {
 	
 	frameRate(25);
 	
-	colorMode(HSB);
+	colorMode(HSB,360, 100, 100);
 	
 	try{
 		incoming = loadStrings("private.txt");
@@ -76,10 +76,11 @@ void setup() {
 	parseFromJSON();
 	
 	mailManager.initFromList();
+	mailManager.initSubjectList();
 
 		
-	subjectList = new ArrayList();
-	parseSubjectList();
+	// subjectList = new ArrayList();
+	// parseSubjectList();
 	initGUI();
 }
 
@@ -88,7 +89,9 @@ void draw() {
 	background(128);
 	smooth();
 	mailManager.drawVisu(currentVisu);
-	drawLinks();		
+	mailManager.drawThreadLines();			
+
+	//drawLinks();		
 }
 
 // GUI
@@ -229,59 +232,60 @@ void controlEvent(ControlEvent theEvent) {
 		int i = round(theEvent.controller().value());
 		TMNMailVisu currentTMNMail = mailManager.getMailAt(i);
 		String message = dateFormat.format(currentTMNMail.getSentDate());
-		message = message +"\n"+ currentTMNMail.getMessage();
+		message = message 
+			+"\n"+ currentTMNMail.getMessage();
 		textArea.setText(message);
 	}
-	
+	mailManager.updateThreadLines();			
 }
 
 
-void parseSubjectList(){
+// void parseSubjectList(){
+// 
+// 	for(int i = 0; i < mailManager.getCount(); i++){
+// 		
+// 		boolean bingo = false;
+// 		
+// 		// println(i);
+// 		TMNMailVisu currentMail = mailManager.getMailAt(i);
+// 		
+// 		if(subjectList.isEmpty()){
+// 			
+// 			TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
+// 			subjectList.add(newMM);
+// 			
+// 		}else{
+// 			
+// 			for(int j = 0; j < subjectList.size(); j++){
+// 				
+// 				TMNMailManager currentMM = (TMNMailManager) subjectList.get(j);
+// 				// println("currentMailName " + currentMail.getShortFrom() +" / currentMMName "+ currentMM.getName());
+// 				
+// 				if(currentMM.getName().contains(currentMail.getSubject())){
+// 					currentMM.add(currentMail);
+// 					
+// 					// println("Bingo!");
+// 					bingo = true;					
+// 				}
+// 			}
+// 			if(!bingo){
+// 				TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
+// 			    subjectList.add(newMM);
+// 			    // println(newMM.getName());
+// 			}else{
+// 				bingo = false;
+// 			}
+// 		}		
+// 	}
+// 	// println("Array fromList contains: "+fromList.size());
+// }
 
-	for(int i = 0; i < mailManager.getCount(); i++){
-		
-		boolean bingo = false;
-		
-		// println(i);
-		TMNMailVisu currentMail = mailManager.getMailAt(i);
-		
-		if(subjectList.isEmpty()){
-			
-			TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
-			subjectList.add(newMM);
-			
-		}else{
-			
-			for(int j = 0; j < subjectList.size(); j++){
-				
-				TMNMailManager currentMM = (TMNMailManager) subjectList.get(j);
-				// println("currentMailName " + currentMail.getShortFrom() +" / currentMMName "+ currentMM.getName());
-				
-				if(currentMM.getName().contains(currentMail.getSubject())){
-					currentMM.add(currentMail);
-					
-					// println("Bingo!");
-					bingo = true;					
-				}
-			}
-			if(!bingo){
-				TMNMailManager newMM = new TMNMailManager(currentMail.getSubject());
-			    subjectList.add(newMM);
-			    // println(newMM.getName());
-			}else{
-				bingo = false;
-			}
-		}		
-	}
-	// println("Array fromList contains: "+fromList.size());
-}
-
-void drawLinks(){
-	for(int i = 0; i < subjectList.size(); i++){
-		TMNMailManager currentMM = (TMNMailManager) subjectList.get(i);
-		currentMM.drawVisu("Links");
-	}
-}
+// void drawLinks(){
+// 	for(int i = 0; i < subjectList.size(); i++){
+// 		TMNMailManager currentMM = (TMNMailManager) subjectList.get(i);
+// 		currentMM.drawVisu("Links");
+// 	}
+// }
 
 public void onlineCheck() {
 	println("a button event from onlineCheck: ");
@@ -289,6 +293,5 @@ public void onlineCheck() {
 }
 
 void takeAPicture() {
-	save("./output/TMNEMail-" + year() + month() + day() + hour() + minute() + second() + ".tif");
-	
+	save("./output/TMNEMail-" + year() + nf(month(),2) + nf(day(),2) + nf(hour(),2) + nf(minute(),2) + nf(second(),2) + ".tif");
 }

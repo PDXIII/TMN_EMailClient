@@ -91,11 +91,10 @@ void checkMailsOnline() {
 	println("OnlineCheck done!");
 }
 
-// Function to parse the downloaded mails int a JSON file on your system
+// Function to parse the downloaded mails into a JSON file on your system
 void parse2JSON(){	
 	// println("parse 2 JSON NOW!");
 	String[] storedMails = new String[currentMailManager.getCount()+2];	
-	// String introJSON = "{\"mails\":[";
 	String introJSON = "{\"total\": \"" + currentMailManager.getCount() +"\",\"mails\":[";
 	String outroJSON = "]}";
 	storedMails[0] = introJSON;
@@ -113,6 +112,8 @@ void parse2JSON(){
 	saveStrings(jsonFile, storedMails);
 	parseFromJSON();	
 }
+
+// Function to parse mails from the JSON file on your system
 
 void parseFromJSON(){
 
