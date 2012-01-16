@@ -7,7 +7,7 @@ public class TMNMailVisu extends TMNMail{
 	
 	color mainColor = color (0,0,0);;
 	
-	int angle = 0;
+	float angle = 0;
 	
 	int subjectIndex = 0;
 	
@@ -73,11 +73,11 @@ public class TMNMailVisu extends TMNMail{
 		return mainColor;
 	}
 	
-	void setAngle(int _angle){
+	void setAngle(float _angle){
 		angle = _angle;
 	}
 	
-	int getAngle(){
+	float getAngle(){
 		return angle;
 	}
 	
@@ -92,7 +92,7 @@ public class TMNMailVisu extends TMNMail{
 	void drawRect(){
 		
 		noStroke();
-		fill(mainColor,100);
+		fill(mainColor,200);
 		
 		float xSize = 1;
 		float ySize = getSize()/25;
@@ -125,16 +125,16 @@ public class TMNMailVisu extends TMNMail{
 	}
 	
 	void drawBezier(int _mailCount){
-				stroke(getColor(), 100);
-				strokeWeight(getSize()/2000);
-						
-				PVector point1  = new PVector(getPosX(), getPosY());
-				PVector handle1 = new PVector(getPosX(), 468);
-				PVector handle2 = new PVector(1024/_mailCount*getNumber(), 300);
-				PVector point2  = new PVector(1024/_mailCount*getNumber(), 0);
-						
-				bezier(point1.x, point1.y, handle1.x, handle1.y, handle2.x, handle2.y, point2.x, point2.y);
+		stroke(getColor(), 100);
+		strokeWeight(getSize()/2000);
 				
-			}
+		PVector point1  = new PVector(getPosX(), getPosY());
+		PVector handle1 = new PVector(getPosX(), 468);
+		PVector handle2 = new PVector(1024/_mailCount*getNumber(), 300);
+		PVector point2  = new PVector(1024/_mailCount*getNumber(), 0);
+				
+		bezier(point1.x, point1.y, handle1.x, handle1.y, handle2.x, handle2.y, point2.x, point2.y);
+		
+	}
 
 }

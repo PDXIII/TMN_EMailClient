@@ -71,7 +71,7 @@ void setup() {
 	  	
 	controlP5 = new ControlP5(this);
 		
-	mailManager = new TMNMailManager("Main");
+	mailManager = new TMNMailManager("Main", width, height);
 	// Function to check mail
 	parseFromJSON();
 	

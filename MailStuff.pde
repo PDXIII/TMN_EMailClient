@@ -8,7 +8,7 @@
 // A function to check a mail account
 void checkMailsOnline() {
 	
-	currentMailManager = new TMNMailManager("Current");
+	currentMailManager = new TMNMailManager("Current", width, height);
 	
 	try {
 		Properties props = System.getProperties();
@@ -122,7 +122,7 @@ void parseFromJSON(){
 		JSONArray mails = allMails.getJSONArray("mails");
 		int total = allMails.getInt("total");
 		println ("There are " + total + " mails in your json file.");
-		currentMailManager = new TMNMailManager("Current");
+		currentMailManager = new TMNMailManager("Current", width, height);
 
 		for(int i = 0; i < total; i++){
 			

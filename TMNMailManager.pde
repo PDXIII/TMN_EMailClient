@@ -8,13 +8,20 @@ class TMNMailManager {
 	ArrayList<String> subjectList;
 	ArrayList<ThreadLine> threadLines;
 	
+	float screenWidth; 
+	float screenHeight;
+	
+	float margin = 50.0;
+	
 // Constructor
-	TMNMailManager(String _name){
+	TMNMailManager(String _name, int _sW, int _sH){
 		
 		this.name = _name;
+		this.screenWidth = _sW;
+		this.screenHeight = _sH;
 		tmnMails = new ArrayList();		
 	}
-	
+		
 	// Methoden
 	
 	
@@ -233,7 +240,10 @@ class TMNMailManager {
 	
 
 	void drawVisu(String _kind){
-		
+		stroke(0);
+		noFill();
+		rectMode(CORNERS);
+		rect(0 + margin, 0 + margin, screenWidth - margin, screenHeight - margin);
 		noStroke();
 		fill(128);
 		//rect(0,0,width,height);
@@ -241,33 +251,34 @@ class TMNMailManager {
 		for(int i = 0; i < tmnMails.size(); i++){
 			TMNMailVisu currentMail = (TMNMailVisu)tmnMails.get(i);	
 			
+			float xStep = (screenWidth - 2*margin) / getCount();
+			
 			if(_kind =="Circle"){
 				
-				float xStep = 1024 / getCount();
-				float xPos = i * xStep +10;
-				float yPos = 300;
+				float xPos = i * xStep +margin;
+				float yPos = screenHeight/2;
 						
 				currentMail.setPos(xPos, yPos);
 				currentMail.drawCircle();		
-			
+				
+				println("ScreenWidth: " + screenWidth + " StepSize: " + xStep + " No: " + i + " xPos: " + xPos);
+				float f = 924.0/348.0;
+				println(f);
 			}
 			else if(_kind =="Rectangle"){
+				rectMode(CENTER);
 				
-				float xStep = 1024 / getCount();
-				float xPos = i * xStep +10;
-				float yPos = 300; 
+				float xPos = i * xStep + margin;
+				float yPos = screenHeight/2;
 		
 				currentMail.setPos(xPos, yPos);
-				currentMail.drawRect();	
-	
+				currentMail.drawRect();		
 			}
 	
 			else if(_kind == "Bezier"){
 
 				noFill();
-				
-				float xStep = 1024 / getCount();
-				float xPos = i * xStep;
+				float xPos = i * xStep +margin;
 				float yPos = 768;
 				
 				currentMail.setPos(xPos, yPos);
@@ -277,18 +288,18 @@ class TMNMailManager {
 				
 				noFill();
 				int time = currentMail.getSentDate().getHours()*60 + currentMail.getSentDate().getMinutes();
-				int angle = 360/12 * time/60;
-				// int angle = 360/12 * currentMail.getSentDate().getHours();
+				// float angle = 360.0/12.0 * time/60.0;
+				float angle = 360.0/12.0 * currentMail.getSentDate().getHours();
 				// println(angle + " " + currentMail.getSentDate().getHours());
 				int radius = 500;
 				
-			    float xPos = width/2 + cos(radians(angle))*(radius/2);
-			    float yPos = height/2 + sin(radians(angle))*(radius/2);				
+			    float xPos = screenWidth/2 + cos(radians(angle))*(radius/2);
+			    float yPos = screenHeight/2 + sin(radians(angle))*(radius/2);				
 				
 				currentMail.setPos(xPos, yPos);
 				currentMail.setAngle(angle);
-				// currentMail.drawCircle();
-				currentMail.drawRectInCircle();
+				currentMail.drawCircle();
+				// currentMail.drawRectInCircle();
 			}
   		}
 		//updateThreadLines();

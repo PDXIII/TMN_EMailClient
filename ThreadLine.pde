@@ -117,11 +117,15 @@ public class ThreadLine{
 	// 		endShape();	
 	// 	}
 	void drawLine(){
-		int magnifier = 8;
+		int magnifier = 30;
 	
 		noFill();
-		stroke(255,100);
+		stroke(0,100);
 		strokeWeight(1);
+		
+		// noStroke();
+		// fill(0,10);
+		
 		PVector currentVector = new PVector();
 		PVector prevVector = new PVector();
 	
